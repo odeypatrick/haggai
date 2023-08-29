@@ -26,6 +26,8 @@ export class UsersService {
         }
   
         const phoneNumber = accountDetails[0].PhoneNo;
+
+        console.log(phoneNumber)
   
         request.phoneNumber = phoneNumber;
   
@@ -50,7 +52,6 @@ export class UsersService {
       user = await this.usersRepository.findOne({
         phoneNumber
       });
-
       if (user) {
         throw new UnprocessableEntityException('Account already exists.');
       }
@@ -60,10 +61,7 @@ export class UsersService {
   }
 
   async validateUser(identifier: string, password: string) {
-    const sanitizedIdentifier = this.sanitizePhoneNumber(identifier);
-
-    const searchCriteria = this.getSearchCriteria(sanitizedIdentifier);
-    const user = await this.usersRepository.findOne(searchCriteria);
+    const user = await this.usersRepository.findOne({ $or: [{ phoneNumber: identifier}, { username: identifier }] });
 
     if (!user) {
       throw new UnauthorizedException('User not found.');
@@ -78,17 +76,6 @@ export class UsersService {
     return user;
   }
 
-  private sanitizePhoneNumber(phoneNumber: string): string {
-    // Remove any non-digit characters and leading "0" if present
-    return phoneNumber.replace(/\D/g, '').replace(/^0+/, '');
-  }
-
-  private getSearchCriteria(identifier: string): any {
-    return identifier.startsWith('234') || identifier.startsWith('+234')
-      ? { phoneNumber: identifier }
-      : { username: identifier };
-  }
-
   async getUser(getUserArgs: Partial<User>) {
     return this.usersRepository.findOne(getUserArgs);
   }
@@ -97,6 +84,11 @@ export class UsersService {
     let data = `<?xml version="1.0" encoding="utf-8"?>\n<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">\n  <soap:Header>\n    <Authenticate xmlns="http://tempuri.org/">\n      <userName>CELLULAT-0100</userName>\n      <password>infosight!12</password>\n    </Authenticate>\n  </soap:Header>\n  <soap:Body>\n    <AccountListAll xmlns="http://tempuri.org/">\n      <AccountAll>\n        <AccountNo>${accountNumber}</AccountNo>\n      </AccountAll>\n    </AccountListAll>\n  </soap:Body>\n</soap:Envelope>`;
     const response = await this.bankingService.fetchBankingAccounts(data);
     return response;
+  }
+
+  async deleteAllUsers() {
+    const users = await this.usersRepository.deleteAll({});
+    return users;
   }
 
   async getAllUsers() {

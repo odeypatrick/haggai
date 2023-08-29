@@ -1,12 +1,14 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
 import { CreateUserRequest } from './dto/create-user.request';
 import { UsersService } from './users.service';
-import { ApiParam } from '@nestjs/swagger';
+import { ApiCookieAuth, ApiParam, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from '@app/common';
 
 @Controller('auth')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
   @Post('register')
+  @ApiTags('Auth')
   async createUser(@Body() request: CreateUserRequest) {
     return this.usersService.createUser(request);
   }
@@ -16,12 +18,16 @@ export class UsersController {
     return this.usersService.getAllUsers();
   }
   
-  // 0190158519
-  @ApiParam({ name: 'accountNumber', description: 'Account number' })
-  @Get('/accounts/:accountNumber')
-  async getDetailsByAccountNumber(
-    @Param() 
-    params: any) {
-    return this.usersService.getUserDetailsByAccountNumber(params.accountNumber)
+  @Delete('users')
+  async deleteUsers() {
+    return this.usersService.deleteAllUsers();
+  }
+
+  @Get('user')
+  @ApiCookieAuth()
+  @ApiTags('Auth')
+  @UseGuards(JwtAuthGuard)
+  async fetchUserData(@Req() req: any) {
+    return this.usersService.getUser({ username: req.user.username })
   }
 }

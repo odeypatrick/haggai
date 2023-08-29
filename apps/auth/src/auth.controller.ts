@@ -1,4 +1,4 @@
-import { Controller, Post, Res, UseGuards, Body } from '@nestjs/common';
+import { Controller, Post, Res, UseGuards, Body, Get, Req } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
 import { Response } from 'express';
 import { AuthService } from './auth.service';
@@ -7,13 +7,15 @@ import JwtAuthGuard from './guards/jwt-auth.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { User } from './users/schemas/user.schema';
 import { LoginUserRequest } from './users/dto/login.request';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @UseGuards(LocalAuthGuard)
-  @Post('login')
+  @Post('signin')
+  @ApiTags('Auth')
   async login(
     @Body() request: LoginUserRequest,
     @CurrentUser() user: User,

@@ -18,7 +18,6 @@ async function bootstrap() {
   .setTitle('Authentication Service  API')
   .setDescription('Api will be used for login, signup and get user info')
   .setVersion('2.0')
-  .addTag('Haggai')
   .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

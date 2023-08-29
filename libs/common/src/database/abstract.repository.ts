@@ -14,7 +14,7 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
 
   constructor(
     protected readonly model: Model<TDocument>,
-    private readonly connection: Connection,
+    private readonly connection: Connection
   ) {}
 
   async create(
@@ -71,6 +71,10 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
 
   async find(filterQuery: FilterQuery<TDocument>) {
     return this.model.find(filterQuery, {}, { lean: true });
+  }
+
+  async deleteAll(filterQuery: FilterQuery<TDocument>) {
+    return this.model.deleteMany(filterQuery, { lean: true });
   }
 
   async startTransaction() {

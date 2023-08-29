@@ -10,7 +10,7 @@ export interface TokenPayload {
 
 @Injectable()
 export class AuthService {
-  constructor(
+  constructor( 
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
   ) {}

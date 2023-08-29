@@ -9,6 +9,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Account, AccountSchema } from './schemas/account.schema';
 import { AuthModule, RmqModule } from '@app/common';
 import { TRANSACTION_SERVICE } from './constants/services';
+import { BankingService } from './banking.service';
 
 @Module({
   imports: [
@@ -28,6 +29,6 @@ import { TRANSACTION_SERVICE } from './constants/services';
     AuthModule
   ],
   controllers: [AccountController],
-  providers: [AccountService, AccountRepository],
+  providers: [AccountService, AccountRepository, BankingService],
 })
 export class AccountModule {}
