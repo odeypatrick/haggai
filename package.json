@@ -96,8 +96,5 @@
     "moduleNameMapper": {
       "^@app/common(|/.*)$": "<rootDir>/libs/common/src/$1"
     }
-  },
-  "engines": {
-    "node": ">=14 <15"
   }
 }
